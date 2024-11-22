@@ -1,9 +1,21 @@
 .
+├── apps
+│   └── calendar-app
+│       └── main.py
 ├── dVim
+│   ├── dvim-install.sh
 │   └── Readme.md
 ├── index.html
 ├── LICENSE
 ├── monotree-structure.txt
+├── python
+│   ├── digital-electronics
+│   │   ├── FullAdder.py
+│   │   ├── HalfAdder.py
+│   │   ├── __init__.py
+│   │   ├── LogicGates.py
+│   │   ├── Mux4to1.py
+│   └── stack.py
 ├── Readme.md
 └── webapps
     └── matrix-animation
