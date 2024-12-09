@@ -1,6 +1,7 @@
 from HalfAdder import Half_Adder
 from LogicGates import AND, NOT, OR
 
+__all__ = ['Full_Adder']
 
 def Full_Adder(a: int, b: int, carry_in: int) -> tuple[int, int]:
     half_adder_sum, half_adder_carry = Half_Adder(a, b)

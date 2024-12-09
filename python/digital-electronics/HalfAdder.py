@@ -1,5 +1,6 @@
 from LogicGates import AND, NOT, OR
 
+__all__ = ['Half_Adder']
 
 def Half_Adder(a: int, b: int) -> tuple[int, int]:
     carry = AND(a, b)
