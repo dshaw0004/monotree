@@ -5,6 +5,7 @@
 # python virtual environment
 .venv/
 .env/
+__pycache__/
 
 # For JS/TS/NodeJS
 
