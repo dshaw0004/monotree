@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" type="image/png" href="./favicon-192x192.png" />
+    <meta charset="UTF-8" />
+    <title>Speedometer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body{
+            height: 100vh;
+            height: 100dvh;
+        }
+        header{
+            height: 10%;
+            background-color: antiquewhite;
+        }
+        header h1 {
+            text-align: center;
+            font-size: 3rem;
+        }
+        main {
+            height: calc(90% - 4rem);
+            background-color: rgb(250, 235, 215);
+            display: grid;
+            place-items: center;
+        }
+        section{
+            max-width: 80ch;
+            margin-inline: auto;
+        }
+        table {
+            min-width: 50ch;
+            margin-inline: auto;
+            border-bottom: 1px solid darkblue;
+            text-align: center;
+            font-size: x-large;
+            border-collapse: collapse;
+            border-radius: 1em;
+        }
+        table caption {
+            font-size: x-large;
+            background-color: antiquewhite;
+            border-top-left-radius: inherit;
+            border-top-right-radius: inherit;
+        }
+        td,
+        th {
+            border-bottom: 1px solid darkblue;
+            font-size: xx-large;
+        }
+        .kmph {
+            font-size: 3rem;
+        }
+        footer {
+            height: 4rem;
+            background-color: rgb(235, 220, 200);
+            display: grid;
+            place-items: center;
+        }
+        footer p {
+            /* outline: 1px solid red; */
+            text-align: center;
+            font-size: xx-large;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Speedometer</h1>
+    </header>
+    <main>
+        <section class="main">
+            <table>
+                <caption>
+                    Your Speed
+                </caption>
+                <!-- <thead> -->
+                    <!-- 	<th>Meter / Second</th> -->
+                    <!-- 	<th>Kilometer / Hour</th> -->
+                <!-- </thead> -->
+                <tr>
+                    <td colspan="2" class="kmph">0 KM/H</td>
+                </tr>
+                <tr>
+                    <td>Current Speed (in m/s)</td>
+                    <td class="mps">0 M/S</td>
+                </tr>
+                <tr>
+                    <td>Average Speed</td>
+                    <td class="avg-speed">0 KM/H</td>
+                </tr>
+                <tr>
+                    <td>Distance Travelled</td>
+                    <td class="total-distance">0 Meter</td>
+                </tr>
+            </table>
+            <!-- <table> -->
+                <!--         <caption> -->
+                    <!--                 Your Location -->
+                <!--         </caption> -->
+                <!--         <thead> -->
+                    <!--                 <th>Latitude</th> -->
+                    <!--                 <th>Longitude</th> -->
+                <!--         </thead> -->
+                <!--         <tr> -->
+                    <!--                 <td class="coords-lat">0.0</td> -->
+                    <!--                 <td class="coords-long">0.0</td> -->
+                <!--         </tr> -->
+            <!-- </table> -->
+        </section>
+    </main>
+    <!-- <p class="coords"></p> -->
+    <footer>
+        <p>made by <a href="https://dshaw0004.netlify.app" target="_blank">@dshaw0004</a></p>
+    </footer>
+    <script>
+        if ('serviceWorker' in navigator) {
+           navigator.serviceWorker.register("./serviceworker.js");
+        }
+
+    </script>
+    <script >
+        let isLocationAvailable = true;
+        let currentCoords = [];
+        let coords10Sago = [];
+        // let coords1minago = [];
+        let distanceTraveled = 0;
+        // let second10s = 0;
+        let isProcessing = true;
+        let totalTime = 0;
+        let timestampNow = Date.now();
+        
+        const kmph = document.querySelector(".kmph"),
+        mps = document.querySelector(".mps"),
+        /*coordsLat = document.querySelector(".coords-lat"),
+        coordsLong = document.querySelector(".coords-long"),*/
+        avgSpeedEle = document.querySelector('.avg-speed'),
+        totalDistanceEle = document.querySelector('.total-distance');
+        
+        function degreeToRadian(degreeValue) {
+            return degreeValue * (Math.PI / 180);
+        }
+        
+        function getDistance(lat1, lon1, lat2, lon2) {
+            const Radius = 6371000.0;
+            
+            let lat1Rad = degreeToRadian(lat1),
+            lon1Rad = degreeToRadian(lon1);
+            
+            let lat2Rad = degreeToRadian(lat2),
+            lon2Rad = degreeToRadian(lon2);
+            
+            let dlon = lon2Rad - lon1Rad;
+            let dlat = lat2Rad - lat1Rad;
+            
+            let a =
+            1 -
+            Math.cos(dlat) +
+            Math.cos(lat1Rad) * Math.cos(lat2Rad) * (1 - Math.cos(dlon));
+            
+            let distance = 2 * Radius * Math.asin(Math.sqrt(a / 2));
+            
+            return distance;
+        }
+        
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    let currLat = position.coords.latitude,
+                    currLon = position.coords.longitude;
+                    
+                    // if (second10s === 0) {
+                    //     let distanceTraveledIn1Min = getDistance(
+                    //     coords1minago[0],
+                    //     coords1minago[1],
+                    //     currLat,
+                    //     currLon
+                    //     );
+                    //     /* if (coords1minago.length >= 2) {alert(`${distanceTraveledIn1Min} Meters distance travelled in 1 Min.`);} */
+                    //     coords1minago = [currLat, currLon];
+                    // }
+                    // second10s = (second10s + 10) % 60;
+                    // coords.innerHTML = `lat: ${currLat}, log: ${currLon}`;
+                    /*coordsLat.innerHTML = currLat;
+                    coordsLong.innerHTML = currLon;*/
+                    
+                    if (currentCoords.length) {
+                        coords10Sago = [currentCoords[0], currentCoords[1]];
+                    }
+                    currentCoords = [currLat, currLon];
+                    
+                    // console.log(coords10Sago)
+                    
+                    if (currentCoords.length && coords10Sago.length) {
+                        let distance = getDistance(
+                        coords10Sago[0],
+                        coords10Sago[1],
+                        currentCoords[0],
+                        currentCoords[1]
+                        );
+                        distanceTraveled = distanceTraveled + distance;
+                        isProcessing = false;
+                        let mpsSpeed = (distance/((Date.now() - timestampNow))*1000).toFixed(2);
+                        kmph.innerHTML = `${(mpsSpeed * 3.6).toFixed(2)} KM/H`;
+                        mps.innerHTML = `${mpsSpeed} M/S`;
+                        // totalTime += 10;
+                        avgSpeedEle.innerHTML = `${((distanceTraveled/totalTime) * 0.36).toFixed(2)} KM/H`;
+                        totalDistanceEle.innerHTML =  distanceTraveled < 1000 ? `${distanceTraveled.toFixed(2)} Meter` : `${(distanceTraveled / 1000).toFixed(2)} Kilometer`;
+                    }
+                    // timestamp1min = Date.now();
+                    timestampNow = Date.now();
+                });
+            } else {
+                isLocationAvailable = false;
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+        
+        const speedometer = setInterval(getLocation, 10000);
+        
+        if (!isLocationAvailable) {
+            clearInterval(speedometer);
+        }
+        
+    </script>
+</body>
+</html>

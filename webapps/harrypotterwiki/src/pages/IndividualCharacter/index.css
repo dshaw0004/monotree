@@ -1,0 +1,4 @@
+h1 {
+	margin: 1rem 0;
+	font-size: clamp(1.25rem, 7.5vw, 2.5rem);
+}

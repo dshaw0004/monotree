@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+	font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+	color-scheme: light dark;
+	color: rgba(255, 255, 255, 0.87);
+	background-color: #242424;
+	height: 100dvh;
+
+	font-synthesis: none;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	background-image: url("https://img.freepik.com/free-vector/happy-halloween-background-theme_52683-44522.jpg?size=626&ext=jpg&ga=GA1.1.1493750423.1685455255&semt=ais");
+	/* background-image: url("https://cdn.pixabay.com/photo/2018/06/15/11/16/hogwarts-3476786_640.png"); */
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: center;
+	background-attachment: fixed;
+}
+* {
+	margin: 0;
+	padding: 0;
+}
+
+@media (prefers-color-scheme: light) {
+	:root {
+		color: #213547;
+		background-color: #ffffff;
+	}
+}
+
+.img {
+	display: block;
+	max-width: 90%;
+	margin-inline: auto;
+}
+.main-content {
+	width: min(1200px, 90%);
+	margin-inline: auto;
+}

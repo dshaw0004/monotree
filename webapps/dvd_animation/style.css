@@ -1,0 +1,26 @@
+*{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+}
+.container {
+        width: 1200px;
+        /* height: 394px; */ 
+        aspect-ratio: 16/9;
+        margin-inline: auto;
+        outline: 2px solid black;
+        position: relative;
+}
+.dvd {
+        width: 51.2px;
+        height: 22.5px;
+        /*background-color: black;*/
+        position: absolute;
+        top: 0;
+        left: 0;
+}
+.dvd img {
+        /* display: block; */
+        width: 100%;
+}
+

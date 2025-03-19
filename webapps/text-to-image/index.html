@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="UTF-8">
+        <title></title>
+        <style>/* colors */
+html {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+body {
+  background: #212121;
+  font-family: "VT323", monospace;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.big-label {
+  color: #39FF14;
+  text-align: center;
+  font-size: 2em;
+}
+
+.help {
+  margin-top: 5%;
+  color: #39FF14;
+}
+
+.the-words {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 400px;
+  height: 100px;
+  border: 1px solid #fff;
+}
+.the-words input {
+  padding: 1em;
+  margin: 3em;
+}
+.the-words .btn {
+  background-color: #39FF14;
+}
+
+#myCanvas {
+  margin-top: 0%;
+  width: 600px;
+  height: 300px;
+  border: 1px solid #fff;
+}</style>
+</head>
+<body>
+        <div class="big-label">
+  <h2>Text to Image</h2>
+  <form class="the-words">
+    <input class="form-control" type="text" name="words" placeholder="Put Some Text Here" required="required"/>
+    <input class="btn" type="submit" value="+ Create Image"/>
+  </form>
+</div>
+<p class="help">You can share the generated image by right clicking and copying</p>
+<canvas id="myCanvas"></canvas>
+
+<script>
+        // PROPERTIES
+// document elements
+const wordsForm = document.querySelector(".the-words");
+
+function makeImage(e) {
+  e.preventDefault();
+  updateCanvas(
+  this.querySelector("[name=words]").value
+  );
+  this.reset();
+}
+
+
+function updateCanvas(text) {
+  var c = document.getElementById("myCanvas");
+  var ctx = c.getContext("2d");
+  ctx.clearRect(0, 0, 400, 200);
+  ctx.fillStyle = "#212121";
+  ctx.fillRect(0, 0, 400, 200)
+  var gradient = ctx.createLinearGradient(0, 0, 200, 200);
+  gradient.addColorStop(0, '#39FF14');
+  gradient.addColorStop(1, 'white');
+  ctx.fillStyle = gradient;
+  var fontface = "Courier";
+  ctx.font = "30px Courier";
+  ctx.textAlign = 'center';
+  // start with a large font size
+    var fontsize=300;
+    // lower the font size until the text fits the canvas
+    do{
+        fontsize--;
+        ctx.font=fontsize+"px "+fontface;
+    }while(ctx.measureText(text).width>c.width)
+  ctx.fillText(text, 150, 100);
+  console.log(ctx.measureText(text).width);
+}
+
+wordsForm.addEventListener("submit", makeImage);
+</script>
+</body>
+</html>
