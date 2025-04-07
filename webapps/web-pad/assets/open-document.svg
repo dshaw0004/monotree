@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Base document -->
+  <rect x="14" y="12" width="36" height="44" rx="3" ry="3" fill="#fff8c9" stroke="#ff9a9e" stroke-width="2"/>
+  
+  <!-- Folder background -->
+  <path d="M10,16 L22,16 L26,12 L54,12 C55.7,12 57,13.3 57,15 L57,49 C57,50.7 55.7,52 54,52 L10,52 C8.3,52 7,50.7 7,49 L7,19 C7,17.3 8.3,16 10,16 Z" fill="#fbc2eb" fill-opacity="0.6" stroke="#ff9a9e" stroke-width="1.5"/>
+  
+  <!-- Text lines -->
+  <line x1="22" y1="26" x2="42" y2="26" stroke="#fda085" stroke-width="2" stroke-linecap="round"/>
+  <line x1="22" y1="34" x2="42" y2="34" stroke="#fda085" stroke-width="2" stroke-linecap="round"/>
+  <line x1="22" y1="42" x2="36" y2="42" stroke="#fda085" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Action circle -->
+  <circle cx="48" cy="48" r="10" fill="#ffb347" stroke="#ff9a9e" stroke-width="1.5"/>
+  
+  <!-- Open icon (arrow pointing outward) -->
+  <path d="M44,48 L52,48 M52,48 L48,44 M52,48 L48,52" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg> 

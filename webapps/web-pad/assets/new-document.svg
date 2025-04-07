@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Base document -->
+  <rect x="14" y="8" width="36" height="48" rx="3" ry="3" fill="#fff8c9" stroke="#ff9a9e" stroke-width="2"/>
+  
+  <!-- Page fold (top right corner) -->
+  <path d="M50 8 L42 8 L50 16 Z" fill="#fbc2eb" stroke="#ff9a9e" stroke-width="1"/>
+  
+  <!-- Text lines -->
+  <line x1="22" y1="24" x2="42" y2="24" stroke="#fda085" stroke-width="2" stroke-linecap="round"/>
+  <line x1="22" y1="32" x2="42" y2="32" stroke="#fda085" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Plus sign for new document -->
+  <circle cx="48" cy="48" r="10" fill="#ffb347" stroke="#ff9a9e" stroke-width="1.5"/>
+  <line x1="48" y1="42" x2="48" y2="54" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+  <line x1="42" y1="48" x2="54" y2="48" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+</svg> 

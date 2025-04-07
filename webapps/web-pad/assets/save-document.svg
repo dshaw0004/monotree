@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Base document -->
+  <rect x="14" y="8" width="36" height="48" rx="3" ry="3" fill="#fff8c9" stroke="#ff9a9e" stroke-width="2"/>
+  
+  <!-- Page fold (top right corner) -->
+  <path d="M50 8 L42 8 L50 16 Z" fill="#fbc2eb" stroke="#ff9a9e" stroke-width="1"/>
+  
+  <!-- Text lines -->
+  <line x1="22" y1="24" x2="42" y2="24" stroke="#fda085" stroke-width="2" stroke-linecap="round"/>
+  <line x1="22" y1="32" x2="42" y2="32" stroke="#fda085" stroke-width="2" stroke-linecap="round"/>
+  <line x1="22" y1="40" x2="36" y2="40" stroke="#fda085" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Save icon (floppy disk symbol) -->
+  <circle cx="48" cy="48" r="10" fill="#ffb347" stroke="#ff9a9e" stroke-width="1.5"/>
+  <rect x="43" y="43" width="10" height="10" rx="1" ry="1" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+  <rect x="45" y="43" width="6" height="4" rx="1" ry="1" fill="#ffffff"/>
+</svg> 

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+    <link rel="alternate icon" href="assets/favicon.png" type="image/png">
+    <meta name="keywords" content="notepad, text editor, text editor online, web pad, web pad online, web pad notepad, web pad text editor, web pad text editor online"/>
+    <meta name="description" content="Web Pad is a simple, fast and free online text editor that works right in your browser. Create, edit and save text files with this lightweight notepad application."/>
+    <meta name="copyright" content="dshaw0004">
+    <meta name="author" content="dshaw0004, dev.dshaw@gmail.com">
+    <meta name="reply-to" content="dev.dshaw@gmail.com">
+    <meta name="owner" content="dshaw0004">
+    <meta name="language" content="EN">
+    <meta name="category" content="Text Editor">
+
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow">
+    <meta name="bingbot" content="index, follow">
+    <meta name="alexa" content="index, follow">
+    <meta name="yandex" content="index, follow">
+
+    <meta name="og:title" content="Web Pad"/>
+    <meta name="og:type" content="Text Editor"/>
+    <meta name="og:url" content="http://web-pad.web.app/"/>
+    <!-- <meta name="og:image" content="http://ia.media-imdb.com/rock.jpg"/> -->
+    <meta name="og:site_name" content="WebPage"/>
+    <meta name="og:description" content="Web Pad is a simple, fast and free online text editor that works right in your browser. Create, edit and save text files with this lightweight notepad application."/>
+
+    
+    <title>Web Pad</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<!-- version 1.0.0 -->
+<body>
+    <div class="notepad-container">
+        <div class="notepad-header">
+            <div class="title">Web-Pad</div>
+            <div class="controls">
+                <button id="new-btn">New</button>
+                <button id="save-btn">Save</button>
+                <button id="load-btn">Open</button>
+                <button id="fullscreen-btn">Toggle View</button>
+                <input type="file" id="file-input" accept=".txt,.text,.log,.md,.markdown,.html,.htm,.css,.js,.json,.xml,text/plain,text/markdown,text/html,text/css,application/javascript,application/json,text/xml" style="display: none;">
+            </div>
+        </div>
+        <div class="notepad-body">
+            <textarea id="notepad-content" placeholder="Start typing..."></textarea>
+        </div>
+        <div class="notepad-footer">
+            <div id="status" aria-selected="false">Ready</div>
+            <div class="filename-container">
+                <input type="text" id="filename-input" value="untitled.txt" aria-label="Filename" placeholder="Filename">
+            </div>
+            <div id="char-count">Characters: 0</div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+    <script src="intent-filter.js"></script>
+    <script>
+        // Register service worker for PWA functionality
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+</html> 

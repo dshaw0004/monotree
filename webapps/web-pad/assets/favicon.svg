@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Background -->
+  <rect x="8" y="4" width="48" height="56" rx="4" ry="4" fill="#fff8c9" stroke="#ff9a9e" stroke-width="2"/>
+  
+  <!-- Page fold (top right corner) -->
+  <path d="M56 4 L46 4 L56 14 Z" fill="#fbc2eb" stroke="#ff9a9e" stroke-width="1"/>
+  
+  <!-- Text lines (representing content) -->
+  <line x1="16" y1="20" x2="48" y2="20" stroke="#fda085" stroke-width="2" stroke-linecap="round"/>
+  <line x1="16" y1="30" x2="48" y2="30" stroke="#fda085" stroke-width="2" stroke-linecap="round"/>
+  <line x1="16" y1="40" x2="36" y2="40" stroke="#fda085" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Decorative element (logo circle) -->
+  <circle cx="44" cy="46" r="6" fill="#ffb347" stroke="#ff9a9e" stroke-width="1.5"/>
+  
+  <!-- W letter without text element for better compatibility -->
+  <path d="M40.5 46 L42 49 L44 44 L46 49 L47.5 46" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
