@@ -1,7 +1,7 @@
 {
   "hosting": {
     "public": ".",
-    "site": "web-pad",
+    "site": "textpad",
     "ignore": [
       "firebase.json",
       "**/.*",
