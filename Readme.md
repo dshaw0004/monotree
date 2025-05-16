@@ -4,4 +4,4 @@ A monorepo for all of my small projects. Starting from Python to Web Application
 
 ## URL
 
-- [WebPad](https://web-pad.web.app/)
+- [WebPad](https://textpad.web.app/)
