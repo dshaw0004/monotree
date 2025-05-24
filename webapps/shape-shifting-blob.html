@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="UTF-8">
+        <title></title>
+        <style>
+        .blob {
+                width: 200px;
+                height: 200px;
+        }
+        </style>
+</head>
+<body>
+			<div>
+                <div class="blob"></div>
+                <!-- <div class="blob"></div> -->
+                <!-- <div class="blob"></div> -->
+                <!-- <div class="blob"></div> -->
+            </div>
+<script>
+        const blobs = document.querySelectorAll('.blob');
+        function genRadius(){
+                let tl = parseInt(Math.random()*100),
+                    tr = parseInt(Math.random()*100),
+                    bl = parseInt(Math.random()*100),
+                    br = parseInt(Math.random()*100);
+                return [tl, tr, br, bl]
+        }
+        function changeRadii(){
+                if (!blobs) return
+                blobs.forEach(blob => {
+                const radii = genRadius();
+                blob.style.borderTopLeftRadius = `${radii[0]}%`
+                blob.style.borderTopRightRadius = `${radii[1]}%`
+                blob.style.borderBottomLeftRadius = `${radii[2]}%`
+                blob.style.borderBottomRightRadius = `${radii[3]}%`
+                })
+        }
+        changeRadii();
+        setInterval(changeRadii, 4000)
+</script>
+        
+</body>
+</html>
