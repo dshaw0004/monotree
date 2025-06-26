@@ -10,3 +10,4 @@ __pycache__/
 # For JS/TS/NodeJS
 
 node_modules/
+**/node_modules/
