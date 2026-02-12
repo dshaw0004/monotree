@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#121213">
+    <meta name="description" content="A fun 6-digit number guessing game inspired by Wordle">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Numberle">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <title>Numberle - 6 Digit Guessing Game</title>
+    <style>
+        :root {
+            --bg-color: #121213;
+            --text-color: #ffffff;
+            --tile-border: #3a3a3c;
+            --tile-bg: #121213;
+            --tile-filled-border: #565758;
+            --key-bg: #818384;
+            --correct: #538d4e;   /* Green */
+            --present: #b59f3b;   /* Orange/Gold as requested */
+            --absent: #3a3a3c;    /* Gray */
+            --modal-bg: rgba(0, 0, 0, 0.85);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            user-select: none; /* Prevent text selection for game feel */
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Header */
+        header {
+            width: 100%;
+            border-bottom: 1px solid var(--tile-border);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 50px;
+            padding: 10px;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .header-btn {
+            position: absolute;
+            right: 15px;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        /* Game Board */
+        #game-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1;
+            width: 100%;
+            overflow: hidden;
+            padding: 10px;
+        }
+
+        #board {
+            display: grid;
+            grid-template-rows: repeat(6, 1fr);
+            grid-gap: 5px;
+            width: 350px;
+            height: 420px;
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            grid-gap: 5px;
+        }
+
+        .tile {
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--tile-border);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: transform 0.6s, background-color 0.6s, border-color 0.6s;
+            backface-visibility: hidden; /* For flip animation */
+        }
+
+        /* Tile States */
+        .tile[data-state="active"] {
+            border-color: var(--tile-filled-border);
+            animation: pop 0.1s;
+        }
+
+        .tile[data-state="correct"] {
+            background-color: var(--correct);
+            border-color: var(--correct);
+        }
+
+        .tile[data-state="present"] {
+            background-color: var(--present);
+            border-color: var(--present);
+        }
+
+        .tile[data-state="absent"] {
+            background-color: var(--absent);
+            border-color: var(--absent);
+        }
+
+        /* Animations */
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes flip {
+            0% { transform: rotateX(0); background-color: var(--tile-bg); border-color: var(--tile-filled-border); }
+            45% { transform: rotateX(90deg); background-color: var(--tile-bg); border-color: var(--tile-filled-border); }
+            55% { transform: rotateX(90deg); }
+            100% { transform: rotateX(0); }
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        /* Keypad */
+        #keypad {
+            width: 100%;
+            max-width: 500px;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
+        .key-row {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 8px;
+            width: 100%;
+        }
+
+        .key {
+            font-weight: bold;
+            border: 0;
+            padding: 0;
+            height: 58px;
+            border-radius: 4px;
+            cursor: pointer;
+            user-select: none;
+            background-color: var(--key-bg);
+            color: var(--text-color);
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-transform: uppercase;
+            font-size: 1.25rem;
+            margin: 0 3px;
+            touch-action: manipulation;
+        }
+
+        .key#enter, .key#backspace {
+            flex: 1.5;
+            font-size: 12px;
+        }
+
+        .key[data-state="correct"] { background-color: var(--correct); }
+        .key[data-state="present"] { background-color: var(--present); }
+        .key[data-state="absent"] { background-color: var(--absent); }
+
+        /* Toasts (Notifications) */
+        #toast-container {
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .toast {
+            background-color: white;
+            color: black;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 14px;
+            opacity: 1;
+            transition: opacity 0.3s;
+        }
+
+        /* Modal */
+        #modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--modal-bg);
+            display: none; /* Hidden by default */
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background-color: #121213;
+            border: 1px solid var(--tile-border);
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            max-width: 90%;
+            width: 400px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+        .modal-content h2 { margin-bottom: 15px; }
+        .modal-content p { margin-bottom: 20px; line-height: 1.5; }
+        
+        .modal-btn {
+            background-color: var(--correct);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        .modal-btn:hover { opacity: 0.9; }
+
+        /* Stats in Modal */
+        #answer-display {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 4px;
+            margin: 15px 0;
+            color: var(--text-color);
+        }
+
+        /* Responsive adjustments */
+        @media (max-height: 700px) {
+            #board { height: 350px; width: 290px; }
+            .tile { font-size: 1.5rem; }
+            .key { height: 45px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>NUMBERLE</h1>
+        <button class="header-btn" id="help-btn" aria-label="Help">?</button>
+    </header>
+
+    <div id="toast-container"></div>
+
+    <div id="game-container">
+        <div id="board">
+            <!-- Grid generated by JS -->
+        </div>
+    </div>
+
+    <div id="keypad">
+        <!-- Keypad generated by JS -->
+    </div>
+
+    <!-- Modal for End Game / Help -->
+    <div id="modal">
+        <div class="modal-content">
+            <h2 id="modal-title">How To Play</h2>
+            <div id="modal-body">
+                <p>Guess the <strong>6-digit</strong> number in 6 tries.</p>
+                <p>Each guess must be a valid number between <strong>101010 and 999999</strong> (no leading zeros).</p>
+                <div style="display:flex; gap:5px; justify-content:center; margin-bottom:10px;">
+                    <div class="tile" style="width:40px; height:40px; background:var(--correct); border-color:var(--correct);">1</div>
+                    <div class="tile" style="width:40px; height:40px; border:1px solid #565758; color:#565758;">?</div>
+                    <div class="tile" style="width:40px; height:40px; border:1px solid #565758; color:#565758;">?</div>
+                </div>
+                <p style="font-size:12px; text-align:left;">Green: Digit is correct.</p>
+                
+                <div style="display:flex; gap:5px; justify-content:center; margin-bottom:10px;">
+                    <div class="tile" style="width:40px; height:40px; background:var(--present); border-color:var(--present);">5</div>
+                    <div class="tile" style="width:40px; height:40px; border:1px solid #565758; color:#565758;">?</div>
+                    <div class="tile" style="width:40px; height:40px; border:1px solid #565758; color:#565758;">?</div>
+                </div>
+                <p style="font-size:12px; text-align:left;">Orange: Digit is in the number but wrong spot.</p>
+
+                <div style="display:flex; gap:5px; justify-content:center; margin-bottom:10px;">
+                    <div class="tile" style="width:40px; height:40px; background:var(--absent); border-color:var(--absent);">9</div>
+                    <div class="tile" style="width:40px; height:40px; border:1px solid #565758; color:#565758;">?</div>
+                    <div class="tile" style="width:40px; height:40px; border:1px solid #565758; color:#565758;">?</div>
+                </div>
+                <p style="font-size:12px; text-align:left;">Gray: Digit is not in the number.</p>
+            </div>
+            <button class="modal-btn" id="close-modal-btn">Got It</button>
+        </div>
+    </div>
+
+    <script>
+        // --- Configuration ---
+        const NUMBER_LENGTH = 6;
+        const MAX_GUESSES = 6;
+        const MIN_NUMBER = 101010; // Strictly adhering to user "between 101010 to 999999"
+        const MAX_NUMBER = 999999;
+
+        // --- State ---
+        let targetNumberStr = "";
+        let currentGuess = "";
+        let guesses = []; // Array of strings
+        let gameStatus = 'playing'; // 'playing', 'won', 'lost'
+        let currentRowIndex = 0;
+
+        // --- DOM Elements ---
+        const board = document.getElementById('board');
+        const keypad = document.getElementById('keypad');
+        const toastContainer = document.getElementById('toast-container');
+        const modal = document.getElementById('modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalBody = document.getElementById('modal-body');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const helpBtn = document.getElementById('help-btn');
+
+        // --- Initialization ---
+        function initGame() {
+            // Generate random number
+            targetNumberStr = Math.floor(Math.random() * (MAX_NUMBER - MIN_NUMBER + 1) + MIN_NUMBER).toString();
+            console.log("Debug: Answer is", targetNumberStr); // For testing
+
+            // Reset State
+            currentGuess = "";
+            guesses = [];
+            gameStatus = 'playing';
+            currentRowIndex = 0;
+
+            // Build Board
+            board.innerHTML = '';
+            for (let i = 0; i < MAX_GUESSES; i++) {
+                const row = document.createElement('div');
+                row.className = 'row';
+                for (let j = 0; j < NUMBER_LENGTH; j++) {
+                    const tile = document.createElement('div');
+                    tile.className = 'tile';
+                    tile.id = `tile-${i}-${j}`;
+                    row.appendChild(tile);
+                }
+                board.appendChild(row);
+            }
+
+            // Build Keypad
+            createKeypad();
+
+            // Hide Modal
+            modal.style.display = 'none';
+        }
+
+        function createKeypad() {
+            keypad.innerHTML = '';
+            const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
+            const rows = [
+                ['1', '2', '3', '4', '5'],
+                ['6', '7', '8', '9', '0'],
+                ['ENTER', 'BACKSPACE']
+            ];
+
+            rows.forEach(rowKeys => {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'key-row';
+                
+                rowKeys.forEach(key => {
+                    const btn = document.createElement('button');
+                    btn.className = 'key';
+                    btn.textContent = key === 'BACKSPACE' ? '⌫' : key;
+                    btn.setAttribute('data-key', key);
+                    
+                    btn.onclick = () => handleInput(key);
+                    rowDiv.appendChild(btn);
+                });
+                
+                // Center the bottom row
+                if (rowKeys.includes('ENTER')) {
+                    rowDiv.style.justifyContent = 'center';
+                }
+                keypad.appendChild(rowDiv);
+            });
+        }
+
+        // --- Input Handling ---
+        function handleInput(key) {
+            if (gameStatus !== 'playing') return;
+
+            if (key === 'ENTER') {
+                submitGuess();
+            } else if (key === 'BACKSPACE') {
+                currentGuess = currentGuess.slice(0, -1);
+                updateCurrentRow();
+            } else {
+                // Only numbers
+                if (!/^\d$/.test(key)) return;
+                if (currentGuess.length < NUMBER_LENGTH) {
+                    currentGuess += key;
+                    updateCurrentRow();
+                }
+            }
+        }
+
+        // Physical Keyboard Support
+        document.addEventListener('keydown', (e) => {
+            if (modal.style.display === 'flex') return;
+
+            const key = e.key;
+            if (key >= '0' && key <= '9') {
+                handleInput(key);
+            } else if (key === 'Enter') {
+                handleInput('ENTER');
+            } else if (key === 'Backspace') {
+                handleInput('BACKSPACE');
+            }
+        });
+
+        function updateCurrentRow() {
+            for (let i = 0; i < NUMBER_LENGTH; i++) {
+                const tile = document.getElementById(`tile-${currentRowIndex}-${i}`);
+                tile.textContent = currentGuess[i] || "";
+                if (currentGuess[i]) {
+                    tile.setAttribute('data-state', 'active');
+                    tile.style.borderColor = 'var(--tile-filled-border)';
+                } else {
+                    tile.removeAttribute('data-state');
+                    tile.style.borderColor = 'var(--tile-border)';
+                }
+            }
+        }
+
+        // --- Core Logic ---
+        function submitGuess() {
+            if (currentGuess.length !== NUMBER_LENGTH) {
+                showToast("Not enough digits");
+                shakeRow();
+                return;
+            }
+
+            if (currentGuess.startsWith('0')) {
+                showToast("No leading zeros allowed");
+                shakeRow();
+                return;
+            }
+            
+            const guessNum = parseInt(currentGuess, 10);
+            if (guessNum < MIN_NUMBER || guessNum > MAX_NUMBER) {
+                showToast("Number must be between 101010 and 999999");
+                shakeRow();
+                return;
+            }
+
+            // Valid Guess: Process Colors
+            const result = checkColors(currentGuess, targetNumberStr);
+            revealRow(result);
+        }
+
+        function checkColors(guess, target) {
+            const result = new Array(NUMBER_LENGTH).fill('absent');
+            const targetArr = target.split('');
+            const guessArr = guess.split('');
+
+            // Pass 1: Find Greens (Correct position)
+            guessArr.forEach((char, i) => {
+                if (char === targetArr[i]) {
+                    result[i] = 'correct';
+                    targetArr[i] = null; // Mark as used
+                    guessArr[i] = null;
+                }
+            });
+
+            // Pass 2: Find Oranges (Wrong position)
+            guessArr.forEach((char, i) => {
+                if (char !== null && targetArr.includes(char)) {
+                    result[i] = 'present';
+                    // Remove the first occurrence of this char from targetArr to handle duplicates correctly
+                    const indexInTarget = targetArr.indexOf(char);
+                    targetArr[indexInTarget] = null; 
+                }
+            });
+
+            return result;
+        }
+
+        function revealRow(result) {
+            gameStatus = 'processing'; // Block input during animation
+            
+            // Flip animation with delay
+            for (let i = 0; i < NUMBER_LENGTH; i++) {
+                setTimeout(() => {
+                    const tile = document.getElementById(`tile-${currentRowIndex}-${i}`);
+                    tile.style.animation = 'flip 0.5s ease forwards';
+                    tile.style.backgroundColor = `var(--${result[i]})`;
+                    tile.style.borderColor = `var(--${result[i]})`;
+                    
+                    // Update Keypad Colors
+                    // Only upgrade colors: Absent -> Present -> Correct
+                    const keyBtn = document.querySelector(`.key[data-key="${currentGuess[i]}"]`);
+                    const currentKeyState = keyBtn.getAttribute('data-state');
+                    const newResult = result[i];
+
+                    if (currentKeyState !== 'correct') {
+                        if (newResult === 'correct') {
+                            keyBtn.setAttribute('data-state', 'correct');
+                        } else if (newResult === 'present' && currentKeyState !== 'present') {
+                            keyBtn.setAttribute('data-state', 'present');
+                        } else if (newResult === 'absent' && !currentKeyState) {
+                            keyBtn.setAttribute('data-state', 'absent');
+                        }
+                    }
+
+                }, i * 250); // 250ms delay between each tile flip
+            }
+
+            // After animation finishes
+            setTimeout(() => {
+                guesses.push(currentGuess);
+                
+                if (currentGuess === targetNumberStr) {
+                    gameStatus = 'won';
+                    showModal("You Won!", `The number was <div id="answer-display">${targetNumberStr}</div>Great job!`);
+                } else if (currentRowIndex >= MAX_GUESSES - 1) {
+                    gameStatus = 'lost';
+                    showModal("Game Over", `The number was <div id="answer-display">${targetNumberStr}</div>Better luck next time!`);
+                } else {
+                    currentRowIndex++;
+                    currentGuess = "";
+                    gameStatus = 'playing';
+                }
+            }, NUMBER_LENGTH * 250 + 100);
+        }
+
+        function shakeRow() {
+            const row = document.querySelector(`#board .row:nth-child(${currentRowIndex + 1})`);
+            row.classList.add('shake');
+            setTimeout(() => row.classList.remove('shake'), 500);
+        }
+
+        // --- UI Utilities ---
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            toastContainer.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+        }
+
+        function showModal(title, htmlContent) {
+            modalTitle.textContent = title;
+            modalBody.innerHTML = htmlContent;
+            
+            // Change button to Play Again if game over
+            if (gameStatus === 'won' || gameStatus === 'lost') {
+                closeModalBtn.textContent = "Play Again";
+                closeModalBtn.onclick = initGame;
+            } else {
+                // Help modal
+                closeModalBtn.textContent = "Got It";
+                closeModalBtn.onclick = () => modal.style.display = 'none';
+            }
+            
+            modal.style.display = 'flex';
+        }
+
+        // --- Help Button ---
+        helpBtn.onclick = () => {
+            // Restore help content
+            modalTitle.textContent = "How To Play";
+            modalBody.innerHTML = `
+                <p>Guess the <strong>6-digit</strong> number in 6 tries.</p>
+                <p>Each guess must be a valid number between <strong>101010 and 999999</strong> (no leading zeros).</p>
+                <div style="display:flex; gap:5px; justify-content:center; margin-bottom:10px;">
+                    <div class="tile" style="width:40px; height:40px; background:var(--correct); border-color:var(--correct);">1</div>
+                    <div class="tile" style="width:40px; height:40px; border:1px solid #565758; color:#565758;">?</div>
+                    <div class="tile" style="width:40px; height:40px; border:1px solid #565758; color:#565758;">?</div>
+                </div>
+                <p style="font-size:12px; text-align:left;">Green: Digit is correct.</p>
+                
+                <div style="display:flex; gap:5px; justify-content:center; margin-bottom:10px;">
+                    <div class="tile" style="width:40px; height:40px; background:var(--present); border-color:var(--present);">5</div>
+                    <div class="tile" style="width:40px; height:40px; border:1px solid #565758; color:#565758;">?</div>
+                    <div class="tile" style="width:40px; height:40px; border:1px solid #565758; color:#565758;">?</div>
+                </div>
+                <p style="font-size:12px; text-align:left;">Orange: Digit is in the number but wrong spot.</p>
+
+                <div style="display:flex; gap:5px; justify-content:center; margin-bottom:10px;">
+                    <div class="tile" style="width:40px; height:40px; background:var(--absent); border-color:var(--absent);">9</div>
+                    <div class="tile" style="width:40px; height:40px; border:1px solid #565758; color:#565758;">?</div>
+                    <div class="tile" style="width:40px; height:40px; border:1px solid #565758; color:#565758;">?</div>
+                </div>
+                <p style="font-size:12px; text-align:left;">Gray: Digit is not in the number.</p>
+            `;
+            closeModalBtn.textContent = "Got It";
+            closeModalBtn.onclick = () => modal.style.display = 'none';
+            modal.style.display = 'flex';
+        };
+
+        // Start Game
+        initGame();
+
+        // Register service worker for PWA functionality
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('ServiceWorker registration failed: ', error);
+                    });
+            });
+        }
+
+    </script>
+</body>
+</html>
